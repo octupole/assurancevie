@@ -1,0 +1,15 @@
+# Core dependencies (built into Python 3.8+)
+# argparse - Command line argument parsing
+# dataclasses - Data structure definitions  
+# typing - Type hints support
+
+# Optional dependencies for enhanced functionality
+pandas>=1.3.0       # For CSV export and grid analysis
+matplotlib>=3.5.0   # For plotting and visualization
+plotly              # For interactive plotting and visualization
+streamlit           # For web interface
+
+# Development dependencies (optional)
+pytest>=6.0.0      # For running tests
+black>=22.0.0      # For code formatting
+mypy>=0.900        # For type checking
