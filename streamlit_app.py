@@ -514,6 +514,6 @@ st.markdown(
     **⚠️ Disclaimer**: This tool is for educational purposes only. 
     Consult qualified financial and tax professionals before making investment decisions.
     
-    **📚 Documentation**: [GitHub Repository](https://github.com/octupole/myretirement)
+    **📚 Documentation**: [GitHub Repository](https://github.com/octupole/assurancevie)
     """
 )

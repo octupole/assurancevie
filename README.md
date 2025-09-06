@@ -79,8 +79,8 @@ pip install pandas matplotlib
 ### Download
 
 ```bash
-git clone https://github.com/octupole/myretirement.git
-cd av-cto-simulator
+git clone https://github.com/octupole/assurancevie.git
+cd assurancevie
 ```
 
 ## 📚 Documentation

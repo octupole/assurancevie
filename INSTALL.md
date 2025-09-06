@@ -12,8 +12,8 @@
 ### Option 1: Clone from GitHub (Recommended)
 
 ```bash
-git clone https://github.com/octupole/myretirement.git
-cd av-cto-simulator
+git clone https://github.com/octupole/assurancevie.git
+cd assurancevie
 ```
 
 ### Option 2: Download ZIP
@@ -278,7 +278,7 @@ The simulator is lightweight and should run quickly. If experiencing slowness:
 ### From GitHub
 
 ```bash
-cd av-cto-simulator
+cd assurancevie
 git pull origin main
 ```
 
