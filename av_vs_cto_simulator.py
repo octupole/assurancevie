@@ -504,42 +504,74 @@ def main():
         av_abatement_ir=args.abatement,
     )
     if args.grid:
-        if pd is None:
-            raise SystemExit(
-                "Pandas is required for --grid / --csv. Install it: pip install pandas")
         amin, amax, step = args.grid
-        rows: List[dict] = []
-        x = amin
-        while x <= amax + 1e-9:
-            inp_grid = Inputs(**{**inp.__dict__, 'initial': x})
-            out = run_single(inp_grid)
-            row_data = {**asdict(inp_grid), **asdict(out)}
-            row_data['total_wealth_av'] = out.total_wealth_av
-            row_data['total_wealth_cto'] = out.total_wealth_cto
-            rows.append(row_data)
-            x += step
-        df = pd.DataFrame(rows)
-        df['diff'] = df['total_wealth_av'] - df['total_wealth_cto']
-        if args.csv:
-            df.to_csv(args.csv, index=False)
-            print(f"CSV written: {args.csv}")
-        # Plot
-        if args.plot:
-            try:
-                import matplotlib.pyplot as plt
-                plt.figure()
-                plt.plot(df['initial'], df['diff'])
-                plt.axhline(0, linestyle='--')
-                plt.xlabel('Initial capital (€)')
-                plt.ylabel('AV - CTO: total net wealth')
-                plt.title('AV - CTO difference vs initial capital')
-                plt.show()
-            except Exception as e:
-                print(f"Plot failed: {e}")
-        # Quick summary
-        idx = df['diff'].abs().idxmin()
-        print("\n≈ Closest point to equilibrium:")
-        print(df.loc[idx, ['initial', 'diff']])
+        
+        # If pandas is available, use it for full functionality
+        if pd is not None:
+            rows: List[dict] = []
+            x = amin
+            while x <= amax + 1e-9:
+                inp_grid = Inputs(**{**inp.__dict__, 'initial': x})
+                out = run_single(inp_grid)
+                row_data = {**asdict(inp_grid), **asdict(out)}
+                row_data['total_wealth_av'] = out.total_wealth_av
+                row_data['total_wealth_cto'] = out.total_wealth_cto
+                rows.append(row_data)
+                x += step
+            df = pd.DataFrame(rows)
+            df['diff'] = df['total_wealth_av'] - df['total_wealth_cto']
+            if args.csv:
+                df.to_csv(args.csv, index=False)
+                print(f"CSV written: {args.csv}")
+            # Plot
+            if args.plot:
+                try:
+                    import matplotlib.pyplot as plt
+                    plt.figure()
+                    plt.plot(df['initial'], df['diff'])
+                    plt.axhline(0, linestyle='--')
+                    plt.xlabel('Initial capital (€)')
+                    plt.ylabel('AV - CTO: total net wealth')
+                    plt.title('AV - CTO difference vs initial capital')
+                    plt.show()
+                except Exception as e:
+                    print(f"Plot failed: {e}")
+            # Quick summary
+            idx = df['diff'].abs().idxmin()
+            print("\n≈ Closest point to equilibrium:")
+            print(df.loc[idx, ['initial', 'diff']])
+        else:
+            # Fallback: console output without pandas
+            if args.csv:
+                print("Warning: CSV output requires pandas. Install it: pip install pandas")
+            if args.plot:
+                print("Warning: Plotting requires pandas and matplotlib. Install them: pip install pandas matplotlib")
+            
+            print(f"\n--- Grid Analysis: {amin:,.0f}€ to {amax:,.0f}€ (step: {step:,.0f}€) ---")
+            print(f"{'Capital (€)':>12} | {'AV Total (€)':>12} | {'CTO Total (€)':>12} | {'Difference (€)':>12}")
+            print("-" * 55)
+            
+            closest_to_zero = None
+            closest_diff = float('inf')
+            
+            x = amin
+            while x <= amax + 1e-9:
+                inp_grid = Inputs(**{**inp.__dict__, 'initial': x})
+                out = run_single(inp_grid)
+                diff = out.total_wealth_av - out.total_wealth_cto
+                
+                print(f"{x:12,.0f} | {out.total_wealth_av:12,.0f} | {out.total_wealth_cto:12,.0f} | {diff:12,.0f}")
+                
+                if abs(diff) < closest_diff:
+                    closest_diff = abs(diff)
+                    closest_to_zero = (x, diff)
+                
+                x += step
+            
+            if closest_to_zero:
+                print(f"\n≈ Closest point to equilibrium:")
+                print(f"Capital: {closest_to_zero[0]:,.0f}€, Difference: {closest_to_zero[1]:,.0f}€")
+        
         return
 
     # Simple run
